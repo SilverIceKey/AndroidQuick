@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.viewbinding.ViewBinding;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.permissionx.guolindev.PermissionX;
 import com.qmuiteam.qmui.arch.QMUIActivity;

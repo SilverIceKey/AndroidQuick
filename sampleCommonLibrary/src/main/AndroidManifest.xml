@@ -24,8 +24,8 @@
 
     <application
         android:name=".base.SampleApplication"
-        android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <!-- FileProvider文件共享 -->
         <provider
@@ -42,5 +42,9 @@
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|locale"
             android:theme="@android:style/Theme.Translucent" />
+        <service
+            android:name="com.sdwfqin.widget.WindowFloatService"
+            android:enabled="true"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 </manifest>

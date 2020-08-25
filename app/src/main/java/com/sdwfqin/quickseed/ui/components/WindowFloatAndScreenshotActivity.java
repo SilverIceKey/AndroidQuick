@@ -1,18 +1,29 @@
 package com.sdwfqin.quickseed.ui.components;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.VirtualDisplay;
+import android.media.Image;
+import android.media.ImageReader;
+import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
+import android.os.SystemClock;
+import android.widget.ImageView;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
-import com.blankj.utilcode.util.ToastUtils;
+import com.lzf.easyfloat.EasyFloat;
+import com.lzf.easyfloat.interfaces.OnPermissionResult;
+import com.lzf.easyfloat.permission.PermissionUtils;
+import com.sdwfqin.imageloader.util.DisplayUtil;
+import com.sdwfqin.quickseed.R;
 import com.sdwfqin.quickseed.constants.ArouterConstants;
 import com.sdwfqin.quickseed.databinding.ActivityWindowFloatAndScreenshotBinding;
-import io.github.sdwfqin.samplecommonlibrary.view.QuickWindowFloatView;
 
+import java.nio.ByteBuffer;
+
+import github.nisrulz.screenshott.ScreenShott;
 import io.github.sdwfqin.samplecommonlibrary.base.SampleBaseActivity;
 
 /**
@@ -50,18 +61,29 @@ public class WindowFloatAndScreenshotActivity extends SampleBaseActivity<Activit
     @Override
     protected void initClickListener() {
         mBinding.btnScreenshot.setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(getApplicationContext())) {
-                    //启动Activity让用户授权
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                    intent.setData(Uri.parse("package:" + getPackageName()));
-                    startActivityForResult(intent, REQUEST_ALERT);
-                } else {
-                    requestCapturePermission();
-                }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                if (!Settings.canDrawOverlays(getApplicationContext())) {
+//                    //启动Activity让用户授权
+//                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+//                    intent.setData(Uri.parse("package:" + getPackageName()));
+//                    startActivityForResult(intent, REQUEST_ALERT);
+//                } else {
+//                    requestCapturePermission();
+//                }
+//            } else {
+//                requestCapturePermission();
+//            }
+            if (PermissionUtils.checkPermission(this)) {
+                showFloat();
             } else {
-                requestCapturePermission();
+                PermissionUtils.requestPermission(this, new OnPermissionResult() {
+                    @Override
+                    public void permissionResult(boolean b) {
+                        showFloat();
+                    }
+                });
             }
+
         });
     }
 
@@ -71,32 +93,48 @@ public class WindowFloatAndScreenshotActivity extends SampleBaseActivity<Activit
         startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
     }
 
-    private void showFloat(Intent data) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ToastUtils.showShort("当前功能尚未适配Android 10，后续空闲会修改！");
-            return;
-        }
-        QuickWindowFloatView quickWindowFloatView = new QuickWindowFloatView(mContext, data);
-        quickWindowFloatView.show();
+    private void showFloat() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            ToastUtils.showShort("当前功能尚未适配Android 10，后续空闲会修改！");
+//            return;
+//        }
+        EasyFloat.with(this)
+                .setLayout(R.layout.layout_float_quick, view -> {
+                    ImageView ivImg = view.findViewById(R.id.iv_img);
+                    view.findViewById(R.id.btn_close).setOnClickListener(clickView -> {
+                        EasyFloat.dismiss();
+                    });
+                    view.findViewById(R.id.btn_screenshot).setOnClickListener(clickView -> {
+                        EasyFloat.hide();
+                        ivImg.setImageBitmap(ScreenShott.getInstance().takeScreenShotOfRootView(getWindow().getDecorView().getRootView()));
+                        EasyFloat.show();
+                    });
+                })
+                .setMatchParent(true, true)
+                .setDragEnable(true)
+                .show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQUEST_MEDIA_PROJECTION:
-                if (resultCode == RESULT_OK && data != null) {
-                    showFloat(data);
-                }
-                break;
-            case REQUEST_ALERT:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (Settings.canDrawOverlays(this)) {
-                        requestCapturePermission();
-                    } else {
-                        ToastUtils.showShort("ACTION_MANAGE_OVERLAY_PERMISSION权限已被拒绝");
-                    }
-                }
+    private Bitmap getImage(ImageReader mImageReader) {
+        Image image = null;
+        image = mImageReader.acquireLatestImage();
+        while (image == null) {
+            SystemClock.sleep(10);
+            image = mImageReader.acquireLatestImage();
         }
+        int width = image.getWidth();
+        int height = image.getHeight();
+        final Image.Plane[] planes = image.getPlanes();
+        final ByteBuffer buffer = planes[0].getBuffer();
+//每个像素的间距
+        int pixelStride = planes[0].getPixelStride();
+//总的间距
+        int rowStride = planes[0].getRowStride();
+        int rowPadding = rowStride - pixelStride * width;
+        Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
+        bitmap.copyPixelsFromBuffer(buffer);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+        image.close();
+        return bitmap;
     }
 }

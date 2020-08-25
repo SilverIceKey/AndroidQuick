@@ -1,26 +1,41 @@
 package com.sdwfqin.quickseed.ui.components;
 
-import android.widget.ImageView;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
-import com.alibaba.android.vlayout.DelegateAdapter;
-import com.alibaba.android.vlayout.VirtualLayoutManager;
-import com.alibaba.android.vlayout.layout.BaseLayoutHelper;
-import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
-import com.blankj.utilcode.util.ConvertUtils;
-import com.sdwfqin.quickseed.R;
-import com.sdwfqin.quickseed.adapter.StrokeCardAdapter;
-import com.sdwfqin.quickseed.adapter.StrokeHistoryAdapter;
-import com.sdwfqin.quickseed.adapter.StrokeOrderAdapter;
-import com.sdwfqin.quickseed.adapter.StrokeTitleAdapter;
+import com.google.gson.Gson;
 import com.sdwfqin.quickseed.constants.ArouterConstants;
 import com.sdwfqin.quickseed.databinding.ActivityVlayoutSampleBinding;
+import com.sdwfqin.quickseed.model.TicketModel;
+import com.sdwfqin.quickseed.ui.tangramview.HeaderList;
+import com.sdwfqin.quickseed.ui.tangramview.HistoryList;
+import com.sdwfqin.quickseed.ui.tangramview.HistoryTitle;
+import com.sdwfqin.quickseed.ui.tangramview.OrderList;
+import com.sdwfqin.quickseed.ui.tangramview.OrderTitle;
+
+import io.github.sdwfqin.samplecommonlibrary.utils.tangram.TangramHelper;
+import io.github.sdwfqin.samplecommonlibrary.utils.tangram.TangramListModel;
+import io.github.sdwfqin.samplecommonlibrary.utils.tangram.TangramListType;
+
+import com.tmall.wireless.tangram.TangramBuilder;
+import com.tmall.wireless.tangram.TangramEngine;
+import com.tmall.wireless.tangram.dataparser.concrete.Card;
+import com.tmall.wireless.tangram.support.async.AsyncLoader;
+import com.tmall.wireless.tangram.support.async.AsyncPageLoader;
+import com.tmall.wireless.tangram.support.async.CardLoadSupport;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.github.sdwfqin.samplecommonlibrary.base.SampleBaseActivity;
+import io.github.sdwfqin.samplecommonlibrary.utils.assets.AssetsUtils;
+import io.github.sdwfqin.samplecommonlibrary.utils.json.JSONUtil;
 
 /**
  * VLayoutSample
@@ -31,13 +46,8 @@ import io.github.sdwfqin.samplecommonlibrary.base.SampleBaseActivity;
  */
 @Route(path = ArouterConstants.COMPONENTS_VLAYOUTSAMPLE)
 public class VLayoutSampleActivity extends SampleBaseActivity<ActivityVlayoutSampleBinding> {
-
-    private VirtualLayoutManager mVirtualLayoutManager;
-    private DelegateAdapter mDelegateAdapter;
-    private LinkedList<DelegateAdapter.Adapter> mAdapters;
-    private StrokeCardAdapter mStrokeCardAdapter;
-    private StrokeHistoryAdapter mStrokeHistoryAdapter;
-    private StrokeOrderAdapter mStrokeOrderAdapter;
+    private TangramEngine mEngine;
+    private String TAG = VLayoutSampleActivity.class.getSimpleName();
 
     @Override
     protected ActivityVlayoutSampleBinding getViewBinding() {
@@ -49,24 +59,43 @@ public class VLayoutSampleActivity extends SampleBaseActivity<ActivityVlayoutSam
         mTopBar.setTitle("VLayoutSample");
         mTopBar.addLeftBackImageButton()
                 .setOnClickListener(v -> finish());
-
-        mVirtualLayoutManager = new VirtualLayoutManager(mContext);
-        mDelegateAdapter = new DelegateAdapter(mVirtualLayoutManager, false);
-
-        mBinding.rvList.setLayoutManager(mVirtualLayoutManager);
-        mBinding.rvList.setAdapter(mDelegateAdapter);
-
-        mAdapters = new LinkedList<>();
-
+        TangramHelper.init(this);
+        TangramBuilder.InnerBuilder builder = TangramHelper.get(this);
+        builder.registerCell("HeaderList", HeaderList.class);
+        builder.registerCell("HistoryTitle", HistoryTitle.class);
+        builder.registerCell("HistoryList", HistoryList.class);
+        builder.registerCell("OrderTitle", OrderTitle.class);
+        builder.registerCell("OrderList", OrderList.class);
+        mEngine = builder.build();
+        mEngine.setVirtualViewTemplate(AssetsUtils.getAssetsFile(this, "VVTest.out"));
+        CardLoadSupport cardLoadSupport = new CardLoadSupport(new AsyncLoader() {
+            @Override
+            public void loadData(Card card, @NonNull LoadedCallback callback) {
+                Log.d(TAG, "loadData: cardType=" + card.stringType);
+            }
+        }, new AsyncPageLoader() {
+            @Override
+            public void loadData(int page, @NonNull Card card, @NonNull LoadedCallback callback) {
+                Log.d(TAG, "loadData: page=" + page + ", cardType=" + card.stringType);
+            }
+        });
+        CardLoadSupport.setInitialPage(1);
+        mEngine.addCardLoadSupport(cardLoadSupport);
+        mEngine.bindView(mBinding.rvList);
+        datas.clear();
         initHeader();
         initHistoryTitle();
         initHistoryList();
         initOrderTitle();
         initOrderList();
 
-        mDelegateAdapter.setAdapters(mAdapters);
+//        mDelegateAdapter.setAdapters(mAdapters);
 
         initData();
+        TicketModel model = new TicketModel();
+        model.from = "温州";
+        model.to = "杭州";
+        Log.d("Gson",new Gson().toJson(model));
     }
 
     @Override
@@ -74,88 +103,60 @@ public class VLayoutSampleActivity extends SampleBaseActivity<ActivityVlayoutSam
 
     }
 
+    private List<TangramListModel> datas = new ArrayList<>();
+
     private void initHeader() {
-
-        mVirtualLayoutManager.setLayoutViewFactory(ImageView::new);
-
-        LinearLayoutHelper linearLayoutHelper = new LinearLayoutHelper();
-        int dp15 = ConvertUtils.dp2px(15);
-        linearLayoutHelper.setPadding(dp15, dp15, dp15, dp15);
-        linearLayoutHelper.setDividerHeight(dp15);
-        linearLayoutHelper.setBgColor(R.color.frame_gray_background_color);
-
-        BaseLayoutHelper.DefaultLayoutViewHelper defaultLayoutViewHelper =
-                new BaseLayoutHelper.DefaultLayoutViewHelper((layoutView, baseLayoutHelper) -> {
-                    ImageView iv_bg = (ImageView) layoutView;
-                    iv_bg.setImageResource(R.mipmap.ic_launcher);
-                }, (layoutView, baseLayoutHelper) -> {
-
-                });
-
-        linearLayoutHelper.setLayoutViewHelper(defaultLayoutViewHelper);
-
-        mStrokeCardAdapter = new StrokeCardAdapter(linearLayoutHelper, null);
-
-        mStrokeCardAdapter.setOnItemClickListener((adapter, view, position) -> {
-
-        });
-        mAdapters.add(mStrokeCardAdapter);
+        List<TicketModel> models = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            TicketModel model = new TicketModel();
+            model.from = i+"";
+            model.to = i+1+"";
+            models.add(model);
+        }
+        datas.addAll(TangramHelper.getData(TangramListType.ContainerOneColumn,
+                "HeaderList",
+                models));
+//                Arrays.asList(1, 2, 3, 4, 5)));
     }
 
     private void initHistoryTitle() {
-
-        List<String> title = new ArrayList<>();
-        title.add("历史行程");
-
-        StrokeTitleAdapter strokeTitleAdapter =
-                new StrokeTitleAdapter(
-                        new LinearLayoutHelper(),
-                        title);
-
-        mAdapters.add(strokeTitleAdapter);
+        datas.addAll(TangramHelper.getData(TangramListType.ContainerOneColumn,
+                "HistoryTitle",
+                Arrays.asList(1)));
 
     }
 
     private void initHistoryList() {
-        LinearLayoutHelper linearLayoutHelper = new LinearLayoutHelper();
-        int dp15 = ConvertUtils.dp2px(15);
-        linearLayoutHelper.setPadding(dp15, dp15, dp15, dp15);
-        linearLayoutHelper.setDividerHeight(dp15);
-        linearLayoutHelper.setBgColor(getResources().getColor(R.color.frame_gray_background_color));
-        mStrokeHistoryAdapter = new StrokeHistoryAdapter(linearLayoutHelper, null);
-
-        mAdapters.add(mStrokeHistoryAdapter);
+        datas.addAll(TangramHelper.getData(TangramListType.ContainerOneColumn,
+                "HistoryList",
+                Arrays.asList(1, 2, 3, 4, 5)));
     }
 
     private void initOrderTitle() {
-        List<String> title = new ArrayList<>();
-        title.add("推荐订单");
-
-        StrokeTitleAdapter strokeTitleAdapter =
-                new StrokeTitleAdapter(
-                        new LinearLayoutHelper(),
-                        title);
-
-        mAdapters.add(strokeTitleAdapter);
+        datas.addAll(TangramHelper.getData(TangramListType.ContainerOneColumn,
+                "OrderTitle",
+                Arrays.asList(1)));
     }
 
     private void initOrderList() {
-        LinearLayoutHelper linearLayoutHelper = new LinearLayoutHelper();
-        mStrokeOrderAdapter = new StrokeOrderAdapter(linearLayoutHelper, null);
-
-        mAdapters.add(mStrokeOrderAdapter);
+        datas.addAll(TangramHelper.getData(TangramListType.ContainerOneColumn,
+                "OrderList",
+                Arrays.asList(1, 2, 3, 4, 5)));
     }
 
     private void initData() {
-
-        List<String> todoTestBeans = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            todoTestBeans.add("" + i);
+        JSONArray array = null;
+        try {
+            array = new JSONArray(JSONUtil.toJson(datas));
+            mEngine.setData(array);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+    }
 
-        mStrokeCardAdapter.setNewData(todoTestBeans);
-        mStrokeHistoryAdapter.setNewData(todoTestBeans);
-        mStrokeOrderAdapter.setNewData(todoTestBeans);
+    @Override
+    protected void onDestroy() {
+        mEngine.destroy();
+        super.onDestroy();
     }
 }

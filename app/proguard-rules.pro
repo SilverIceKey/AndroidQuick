@@ -70,3 +70,5 @@
     public <init>(android.content.Context, android.util.AttributeSet);
     public <init>(android.content.Context, android.util.AttributeSet, int);
 }
+#悬浮窗
+-keep class com.lzf.easyfloat.* {*;}

@@ -39,7 +39,16 @@ dependencies {
     api("com.alibaba.android:vlayout:${vlayout}@aar") {
         transitive = true
     }
+    api ('com.alibaba.android:virtualview:1.4.6@aar') {
+        transitive = true
+    }
+    api ('com.alibaba.android:ultraviewpager:1.0.7.8@aar') {
+        transitive = true
+    }
+    api("com.alibaba.android:tangram:${tangram}@aar")
     api viewDependencies["brvah"]
+    api viewDependencies["EasyFloat"]
+    api viewDependencies["screenshott"]
     api utilsDependencies["utilcodex"]
     implementation project(':imageloader')
 }
