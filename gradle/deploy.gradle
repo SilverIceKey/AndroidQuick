@@ -1,10 +1,10 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
-def siteUrl = 'https://github.com/sdwfqin/AndroidQuick'      // 项目的主页
-def gitUrl = 'https://github.com/sdwfqin/AndroidQuick.git'   // Git仓库的url
+def siteUrl = 'https://github.com/SilverIceKey/AndroidQuick'      // 项目的主页
+def gitUrl = 'https://github.com/SilverIceKey/AndroidQuick.git'   // Git仓库的url
 
-group = "com.sdwfqin.quicklib"
+group = "com.silverknife.quicklib"
 version = rootProject.ext.versionName
 
 Properties properties = new Properties()
@@ -54,9 +54,9 @@ def pomConfig = {
     }
     developers {
         developer {
-            id 'sdwfqin'
-            name 'qinzhang'
-            email 'sdwfqin@icloud.com'
+            id 'z516798599'
+            name 'ZhouWenJian'
+            email 'z516798599@gmail.com'
         }
     }
     scm {

@@ -1,4 +1,4 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.json;
+package com.sdwfqin.quicklib.utils.json;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

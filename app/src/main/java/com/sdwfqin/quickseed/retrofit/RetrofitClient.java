@@ -2,8 +2,7 @@ package com.sdwfqin.quickseed.retrofit;
 
 import android.util.Log;
 
-import com.sdwfqin.quickseed.BuildConfig;
-
+import io.github.sdwfqin.samplecommonlibrary.BuildConfig;
 import io.github.sdwfqin.samplecommonlibrary.base.Constants;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

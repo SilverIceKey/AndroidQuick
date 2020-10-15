@@ -1,4 +1,4 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.tangram;
+package com.sdwfqin.quicklib.utils.tangram;
 
 import android.content.Context;
 import android.widget.ImageView;
@@ -7,10 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sdwfqin.imageloader.ImageLoader;
+import com.sdwfqin.quicklib.utils.json.JSONUtil;
 import com.sdwfqin.widget.recyclerview.NoBackgroundView;
 import com.tmall.wireless.tangram.TangramBuilder;
 import com.tmall.wireless.tangram.util.IInnerImageSetter;
-import io.github.sdwfqin.samplecommonlibrary.utils.json.JSONUtil;
 
 import org.json.JSONArray;
 

@@ -5,7 +5,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.blankj.utilcode.util.GsonUtils;
 import com.google.gson.Gson;
+import com.sdwfqin.quicklib.utils.tangram.TangramHelper;
+import com.sdwfqin.quicklib.utils.tangram.TangramListModel;
+import com.sdwfqin.quicklib.utils.tangram.TangramListType;
 import com.sdwfqin.quickseed.constants.ArouterConstants;
 import com.sdwfqin.quickseed.databinding.ActivityVlayoutSampleBinding;
 import com.sdwfqin.quickseed.model.TicketModel;
@@ -14,10 +18,6 @@ import com.sdwfqin.quickseed.ui.tangramview.HistoryList;
 import com.sdwfqin.quickseed.ui.tangramview.HistoryTitle;
 import com.sdwfqin.quickseed.ui.tangramview.OrderList;
 import com.sdwfqin.quickseed.ui.tangramview.OrderTitle;
-
-import io.github.sdwfqin.samplecommonlibrary.utils.tangram.TangramHelper;
-import io.github.sdwfqin.samplecommonlibrary.utils.tangram.TangramListModel;
-import io.github.sdwfqin.samplecommonlibrary.utils.tangram.TangramListType;
 
 import com.tmall.wireless.tangram.TangramBuilder;
 import com.tmall.wireless.tangram.TangramEngine;
@@ -35,7 +35,6 @@ import java.util.List;
 
 import io.github.sdwfqin.samplecommonlibrary.base.SampleBaseActivity;
 import io.github.sdwfqin.samplecommonlibrary.utils.assets.AssetsUtils;
-import io.github.sdwfqin.samplecommonlibrary.utils.json.JSONUtil;
 
 /**
  * VLayoutSample
@@ -147,7 +146,7 @@ public class VLayoutSampleActivity extends SampleBaseActivity<ActivityVlayoutSam
     private void initData() {
         JSONArray array = null;
         try {
-            array = new JSONArray(JSONUtil.toJson(datas));
+            array = new JSONArray(GsonUtils.toJson(datas));
             mEngine.setData(array);
         } catch (JSONException e) {
             e.printStackTrace();

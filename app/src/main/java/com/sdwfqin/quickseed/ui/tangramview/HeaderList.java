@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 import com.google.gson.reflect.TypeToken;
 import com.sdwfqin.quickseed.R;
 import com.sdwfqin.quickseed.model.TicketModel;
-import io.github.sdwfqin.samplecommonlibrary.utils.json.JSONUtil;
-import io.github.sdwfqin.samplecommonlibrary.utils.tangram.TangramItemModel;
+import com.sdwfqin.quicklib.utils.json.JSONUtil;
+import com.sdwfqin.quicklib.utils.tangram.TangramItemModel;
 import com.tmall.wireless.tangram.structure.BaseCell;
 import com.tmall.wireless.tangram.structure.view.ITangramViewLifeCycle;
 

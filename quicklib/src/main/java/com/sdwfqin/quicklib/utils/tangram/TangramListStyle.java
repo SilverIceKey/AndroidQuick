@@ -1,4 +1,4 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.tangram;
+package com.sdwfqin.quicklib.utils.tangram;
 
 import java.util.HashMap;
 

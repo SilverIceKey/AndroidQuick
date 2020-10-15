@@ -1,4 +1,4 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.json;
+package com.sdwfqin.quicklib.utils.json;
 
 
 import com.google.gson.GsonBuilder;
