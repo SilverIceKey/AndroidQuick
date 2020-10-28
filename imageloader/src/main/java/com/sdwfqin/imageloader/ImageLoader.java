@@ -60,6 +60,9 @@ public class ImageLoader {
         } else if (builder.imageRadius != 0) {
             glideRequest = glideRequest.transform(new RadiusTransformation(getContext(), builder.imageRadius));
         }
+        if (builder.image.toString().endsWith("mp4")||builder.image.toString().endsWith("avi")||builder.image.toString().endsWith("mkv")){
+            glideRequest = glideRequest.frame(1000);
+        }
         return glideRequest;
     }
 
@@ -118,15 +121,23 @@ public class ImageLoader {
         private int errorImage = 0;
         // 图片角度
         private int imageRadius = 0;
+        //图片基础类
+        private String baseImageLoadUrl = "";
+        //添加变换
         private Transformation<Bitmap> transformation = null;
 
         public Builder setImagePath(Object image) {
-            this.image = image;
+            this.image = baseImageLoadUrl+image;
             return this;
         }
 
         public Builder setPlaceholder(@DrawableRes int placeholder) {
             this.placeholder = placeholder;
+            return this;
+        }
+
+        public Builder setBaseImageLoadUrl(String baseImageLoadUrl) {
+            this.baseImageLoadUrl = baseImageLoadUrl;
             return this;
         }
 
