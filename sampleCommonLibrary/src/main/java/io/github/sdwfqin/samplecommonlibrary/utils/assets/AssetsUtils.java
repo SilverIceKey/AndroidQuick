@@ -1,4 +1,4 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.assets;
+package com.tckx.tckx_demo.common.utils.assets;
 
 import android.app.Activity;
 import android.content.Context;
@@ -81,6 +81,31 @@ public class AssetsUtils {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取assets目录下json文件的数据
+     *
+     * @param context 上下文
+     * @param name    assets目录下的json文件名
+     * @return json数据对象
+     */
+    public static String getJSONFromAsset(@NonNull Context context, String name) {
+        try {
+            InputStream inputStream = context.getAssets().open(name);
+            BufferedReader inputStreamReader =
+                    new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder sb = new StringBuilder();
+            String str;
+            while ((str = inputStreamReader.readLine()) != null) {
+                sb.append(str);
+            }
+            inputStreamReader.close();
+            return sb.toString();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

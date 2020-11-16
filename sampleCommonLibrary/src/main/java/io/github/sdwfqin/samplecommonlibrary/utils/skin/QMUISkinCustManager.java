@@ -1,11 +1,10 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.skin;
+package com.tckx.tckx_demo.common.utils.skin;
 
 import android.content.Context;
 
 import com.blankj.utilcode.util.Utils;
 import com.qmuiteam.qmui.skin.QMUISkinManager;
-
-import io.github.sdwfqin.samplecommonlibrary.R;
+import com.tckx.tckx_demo.R;
 
 public class QMUISkinCustManager {
 

@@ -1,4 +1,4 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.picture;
+package com.tckx.tckx_demo.common.utils.picture;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

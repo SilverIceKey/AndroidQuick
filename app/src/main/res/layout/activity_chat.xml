@@ -3,16 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
-    <data>
-
-        <variable
-            name="viewModel"
-            type="com.sdwfqin.quickseed.ui.components.ChatViewModel" />
-
-        <variable
-            name="handlers"
-            type="com.sdwfqin.quickseed.ui.components.ChatHandlers" />
-    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,19 +24,16 @@
         <EditText
             android:id="@+id/toUser"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.toUser}" />
+            android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/sendMsg"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.sendMsg}" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/send"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="@{()->viewModel.send()}" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </layout>

@@ -1,4 +1,4 @@
-package io.github.sdwfqin.samplecommonlibrary.utils.qrbarscan;
+package com.tckx.tckx_demo.common.utils.qrbarscan;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;

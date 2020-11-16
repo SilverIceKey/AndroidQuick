@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import androidx.annotation.DrawableRes;
 
 import com.bumptech.glide.load.Transformation;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.sdwfqin.imageloader.progress.OnProgressListener;
 import com.sdwfqin.imageloader.progress.ProgressManager;
 import com.sdwfqin.imageloader.transformation.RadiusTransformation;
@@ -31,6 +32,10 @@ public class ImageLoader {
 
     private ImageLoader(ImageView imageView, Builder builder) {
         imageViewWeakReference = new WeakReference<>(imageView);
+        this.builder = builder;
+    }
+
+    private ImageLoader(Builder builder) {
         this.builder = builder;
     }
 
@@ -60,7 +65,29 @@ public class ImageLoader {
         } else if (builder.imageRadius != 0) {
             glideRequest = glideRequest.transform(new RadiusTransformation(getContext(), builder.imageRadius));
         }
-        if (builder.image.toString().endsWith("mp4")||builder.image.toString().endsWith("avi")||builder.image.toString().endsWith("mkv")){
+        if (builder.image.toString().endsWith("mp4") || builder.image.toString().endsWith("avi") || builder.image.toString().endsWith("mkv")) {
+            glideRequest = glideRequest.frame(1000);
+        }
+        return glideRequest;
+    }
+
+    /**
+     * 创建GlideRequest<Bitmap>
+     */
+    public GlideRequest<Bitmap> loadBitmapImage() {
+        GlideRequest<Bitmap> glideRequest = loadBaseImage().asBitmap().load(builder.image);
+        if (builder.placeholder != 0) {
+            glideRequest = glideRequest.placeholder(builder.placeholder);
+        }
+        if (builder.errorImage != 0) {
+            glideRequest = glideRequest.error(builder.errorImage);
+        }
+        if (builder.transformation != null) {
+            glideRequest = glideRequest.transform(builder.transformation);
+        } else if (builder.imageRadius != 0) {
+            glideRequest = glideRequest.transform(new RadiusTransformation(getContext(), builder.imageRadius));
+        }
+        if (builder.image.toString().endsWith("mp4") || builder.image.toString().endsWith("avi") || builder.image.toString().endsWith("mkv")) {
             glideRequest = glideRequest.frame(1000);
         }
         return glideRequest;
@@ -72,6 +99,15 @@ public class ImageLoader {
     public ImageLoader loadImage() {
         GlideRequest<Drawable> glideRequest = loadDrawableImage();
         glideRequest.into(getImageView());
+        return this;
+    }
+
+    /**
+     * 加载到控件
+     */
+    public ImageLoader loadImage(CustomTarget<Bitmap> customTarget) {
+        GlideRequest<Bitmap> glideRequest = loadBitmapImage();
+        glideRequest.into(customTarget);
         return this;
     }
 
@@ -158,6 +194,10 @@ public class ImageLoader {
 
         public ImageLoader build(ImageView imageView) {
             return new ImageLoader(imageView, this);
+        }
+
+        public ImageLoader build() {
+            return new ImageLoader(this);
         }
     }
 }
