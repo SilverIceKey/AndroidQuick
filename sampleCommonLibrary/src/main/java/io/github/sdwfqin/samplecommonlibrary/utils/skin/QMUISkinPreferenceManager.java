@@ -1,4 +1,4 @@
-package com.tckx.tckx_demo.common.utils.skin;
+package io.github.sdwfqin.samplecommonlibrary.utils.skin;
 
 import android.content.Context;
 import android.content.SharedPreferences;
